@@ -1,4 +1,4 @@
 module.exports.config = {
-    savePath: 'C:\\MyWorkSpace\\Node\\TaskMenagerCLI\\localDb\\',
+    savePath: 'C:\\MyWorkSpace\\Node\\TaskManagerCLI\\localDb\\',
     fileName: 'state.json',
 }
