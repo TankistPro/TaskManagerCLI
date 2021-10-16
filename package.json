@@ -1,0 +1,10 @@
+{
+  "name": "tm",
+  "preferGlobal": true,
+  "bin": "./src/index.js",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^8.2.0",
+    "inquirer": "^8.2.0"
+  }
+}
