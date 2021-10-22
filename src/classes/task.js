@@ -1,6 +1,11 @@
 const fs = require('fs');
 const  chalk = require('chalk');
+const { signale } = require('signales')
+
 const { config } = require('../config');
+const { taskStatus } = require('../enums/taskStatus');
+
+signale.config({'displayLabel': false})
 
 class Task {
     saveTask (task, status) {
@@ -13,20 +18,16 @@ class Task {
                 }));
             }
 
-            const tasks =  this.getTasks();
-
             const newTask = {
-                id: this.generateTaskId(),
+                id: null,
                 message: task,
                 status: status
             }
 
-            tasks.taskList.push(newTask);
-
-            fs.writeFileSync(config.savePath + config.fileName, JSON.stringify(tasks));
+            const newTaskId = this.updateTaskObject(newTask);
 
             console.log(
-                chalk.green(`Таск успешно добавлен! ID таска: ${newTask.id}`)
+                chalk.green(`\nТаск успешно добавлен! ID таска: ${newTaskId}\n`)
             )
         } catch (e) {
             console.log(
@@ -35,29 +36,22 @@ class Task {
         }
     }
 
-    generateTaskId () {
-        const tasks =  this.getTasks();
+    updateTaskObject (task = null) {
+        let tasks = JSON.parse(fs.readFileSync(config.savePath + config.fileName, 'utf8'));
 
-        return tasks.taskList.length + 1;
-    }
+        if(task) {
+            tasks.taskList.push(task);
+        }
 
-    getTasks () {
-        const file = fs.readFileSync(config.savePath + config.fileName, 'utf8')
-
-        return JSON.parse(file)
-    }
-
-    displayTaskList () {
-        const tasks = this.getTasks();
-
-        tasks.taskList.forEach(task => {
-            console.log(
-                task.status === 'Новый' ? chalk.gray(`${task.id}. ${task.message}.`):
-                    task.status === 'В процессе' ? chalk.blueBright(`${task.id}. ${task.message}.`) :
-                        chalk.greenBright(`${task.id}. ${task.message}.`)
-            )
+        tasks.taskList.forEach((item, index) => {
+            item.id = index + 1;
         })
+
+        fs.writeFileSync(config.savePath + config.fileName, JSON.stringify(tasks));
+
+        return tasks.taskList.length;
     }
+
 
     _existPath() {
         return fs.existsSync(config.savePath);
@@ -66,3 +60,4 @@ class Task {
 
 
 module.exports.task = new Task()
+

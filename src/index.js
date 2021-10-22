@@ -1,15 +1,15 @@
 const { Command } = require('commander');
 const { prompt } = require('inquirer');
-const fs = require("fs");
-const  chalk = require('chalk');
 
 const program = new Command();
 
 const { task } = require('./classes/task');
+const { render } = require('./classes/render');
+const { taskStatus } = require('./enums/taskStatus');
 
 program
     .command('create-task')
-    .alias('ct')
+    .alias('-ct')
     .action(() => {
         prompt({
             type: 'input',
@@ -20,19 +20,27 @@ program
                 type: 'list',
                 name: 'statusTask',
                 message: 'Статус таска:',
-                choices: ['Новый', 'В процессе', 'Готово'],
+                choices: [taskStatus.NEW_TASK, taskStatus.PENDING_TASK, taskStatus.SUCCESS_TASK],
             }).then(status => {
                 task.saveTask(answers['createTask'], status['statusTask']);
+                render.displayTaskList();
             })
         })
     })
 
 program
     .command('task-list')
-    .alias('tl')
+    .alias('-tl')
     .action(() => {
-            task.displayTaskList()
+            render.displayTaskList();
         }
     )
+
+program
+    .command('check <task_id>')
+    .alias('-c <task_id>')
+    .action((data) => {
+        console.log(data)
+    })
 
 program.parse(process.argv);
